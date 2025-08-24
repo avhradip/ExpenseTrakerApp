@@ -4,51 +4,43 @@ import Input from "@/components/Input";
 import ScreenWrapper from "@/components/ScreenWraper";
 import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
+import { useAuth } from "@/contexts/authContext";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import * as Icons from "phosphor-react-native";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
 
 const Login = () => {
-  const emailRef = useRef("");
-  const passwordRef = useRef("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setLoading] = useState(false);
   const router = useRouter();
+  const {login:loginUser}=useAuth()
 
-  const handleSubmit = async () => {
-    // Get values from refs
-    const email = emailRef.current?.trim();
-    const password = passwordRef.current?.trim();
+const handleSubmit = async () => {
+  if (!email || !password) {
+    Alert.alert("Login", "Please enter both email and password");
+    return;
+  }
 
-    // Validation
-    if (!email || !password) {
-      Alert.alert("Login", "Please enter both email and password");
-      return;
-    }
+  setLoading(true);
 
-    // Basic email format check
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Login", "Please enter a valid email address");
-      return;
-    }
+  const res = await loginUser(email, password);
 
-    if (password.length < 6) {
-      Alert.alert("Login", "Password must be at least 6 characters long");
-      return;
-    }
+  setLoading(false);
 
-    try {
-      // Example login API call (replace with your actual function)
-      // const response = await loginUser(email, password);
+  if (!res.success) {
+    Alert.alert("Login", res.msg);
+    console.log(res.msg); // or console.log(res)
+    return;
+  }
 
-      Alert.alert("Success", "You have logged in successfully!");
-    } catch (error) {
-      Alert.alert("Error", "Something went wrong while logging in");
-      console.error(error);
-    }
-  };
+  // Only clear fields if login was successful
+  setEmail("");
+  setPassword("");
+};
+
 
   return (
     <ScreenWrapper>
@@ -70,7 +62,8 @@ const Login = () => {
           </Typo>
           <Input
             placeholder="Enter your email"
-            onChangeText={(value) => (emailRef.current = value)}
+            value={email}
+            onChangeText={setEmail}
             icon={
               <Icons.At
                 size={verticalScale(26)}
@@ -83,7 +76,8 @@ const Login = () => {
           <Input
             placeholder="Enter your password"
             secureTextEntry
-            onChangeText={(value) => (passwordRef.current = value)}
+            value={password}
+            onChangeText={setPassword}
             icon={
               <Icons.Lock
                 size={verticalScale(26)}
@@ -104,7 +98,7 @@ const Login = () => {
 
         <View style={styles.footer}>
           <Typo size={15}>Don't have an acount</Typo>
-          <Pressable onPress={() => router.push("/(auth)/register")}>
+          <Pressable onPress={() => router.navigate("/(auth)/register")}>
             <Typo size={15} fontWeight={"700"} color={colors.primary}>
               Sign up
             </Typo>

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Expense-Traker-App",
-    "slug": "Expense-Traker-App",
+    "name": "Expense Traker",
+    "slug": "Expense Traker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -28,12 +28,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
