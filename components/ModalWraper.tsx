@@ -1,7 +1,9 @@
-import { colors } from "@/constants/theme";
+import { colors, spacingY } from "@/constants/theme";
 import { ModalWrapperProps } from "@/types";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
+
+const isIos = Platform.OS == 'ios'
 
 const ModalWraper = ({
   style,
@@ -9,12 +11,18 @@ const ModalWraper = ({
   bg = colors.neutral800,
 }: ModalWrapperProps) => {
   return (
-    <View>
-      <Text>ModalWraper</Text>
+    <View style={[styles.container, { backgroundColor: bg }, style && style]}>
+      {children}
     </View>
   );
 };
 
 export default ModalWraper;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: isIos ? spacingY._15 : 20,
+    paddingBottom:isIos ? spacingY._20 : spacingY._10
+  }
+});
