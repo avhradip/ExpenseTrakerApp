@@ -14,11 +14,13 @@ export type ScreenWrapperProps = {
   style?: ViewStyle;
   children: React.ReactNode;
 };
+
 export type ModalWrapperProps = {
   style?: ViewStyle;
   children: React.ReactNode;
   bg?: string;
 };
+
 export type accountOptionType = {
   title: string;
   icon: React.ReactNode;
@@ -81,6 +83,7 @@ export type CategoryType = {
   icon: Icon;
   bgColor: string;
 };
+
 export type ExpenseCategoriesType = {
   [key: string]: CategoryType;
 };
@@ -165,3 +168,13 @@ export type WalletType = {
   uid?: string;
   created?: Date;
 };
+
+export type WalletPropsType = {
+  wallet: WalletType;
+  index: number
+};
+
+export type OldWalletType = {
+  id?: String;
+  name: String;
+}

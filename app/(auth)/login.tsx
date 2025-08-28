@@ -32,7 +32,7 @@ const handleSubmit = async () => {
 
   if (!res.success) {
     Alert.alert("Login", res.msg);
-    console.log(res.msg); // or console.log(res)
+    console.log(res.msg);
     return;
   }
 
@@ -62,7 +62,7 @@ const handleSubmit = async () => {
           </Typo>
           <Input
             placeholder="Enter your email"
-            value={email}
+            value={email.toLowerCase()}
             onChangeText={setEmail}
             icon={
               <Icons.At

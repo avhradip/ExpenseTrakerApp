@@ -1,6 +1,7 @@
 import Loading from "@/components/Loading";
 import ScreenWrapper from "@/components/ScreenWraper";
 import Typo from "@/components/Typo";
+import WalletItem from "@/components/WealetItems"; // ✅ assume you created it
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAuth } from "@/contexts/authContext";
 import useFetchData from "@/hooks/useFetchData";
@@ -12,7 +13,6 @@ import * as Icons from "phosphor-react-native";
 import React from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
-
 const Wallet = () => {
   const router = useRouter();
   const { user } = useAuth();
@@ -21,31 +21,39 @@ const Wallet = () => {
     data: wallets,
     error,
     loading,
-  } = useFetchData<WalletType>("wallets", [
-    where("uid", "==", user?.uid),
-    orderBy("created", "desc"),
-  ]);
+  } = useFetchData<WalletType>(
+    "wallets",
+    user?.uid ? [where("uid", "==", user.uid), orderBy("created", "desc")] : [] // ✅ don’t query until uid is ready
+  );
 
-  const getTotalBalance = () => {
-    return 2;
-  };
-  console.log(wallets.length);
+  const getTotalBalance = () => wallets.reduce((sum, w) => sum + (w.amount ?? 0), 0);
+  
 
   return (
     <ScreenWrapper style={{ backgroundColor: colors.black }}>
       <View style={styles.container}>
-        {/* balance view */}
+        {/* Balance View */}
         <View style={styles.balanceView}>
           <View style={{ alignItems: "center" }}>
-            <Typo size={45} fontWeight={"500"}>
-              ${getTotalBalance()?.toFixed(2)}
-            </Typo>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Icons.CurrencyInr
+                size={verticalScale(40)}
+                color={colors.white}
+                weight="bold"
+                style={{ marginRight: 0 }} // 👈 instead of gap
+              />
+              <Typo size={45} fontWeight="500">
+                {getTotalBalance().toFixed(2)}
+              </Typo>
+            </View>
+
             <Typo size={14} color={colors.neutral300}>
               Total Balance
             </Typo>
           </View>
         </View>
 
+        {/* Wallets List */}
         <View style={styles.wallets}>
           <View style={styles.flexRow}>
             <Typo>My Wallets</Typo>
@@ -61,20 +69,19 @@ const Wallet = () => {
           </View>
 
           {loading && <Loading />}
+          {error && <Typo color="red">{error}</Typo>}
 
           <FlatList
             data={wallets}
-            keyExtractor={(item) => item.id ?? Math.random().toString()}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Typo fontWeight="600">{item.name}</Typo>
-                <Typo color={colors.neutral400}>
-                  Balance: {item.amount ?? 0}
-                </Typo>
-              </View>
+            keyExtractor={(item, index) => item.id ?? index.toString()}
+            // contentContainerStyle={styles.list}
+            renderItem={({ item, index }) => (
+              <WalletItem
+                wallet={item}
+                index={index}
+              />
             )}
-            ListEmptyComponent={<Typo>No wallets found</Typo>}
+            ListEmptyComponent={!loading ? <Typo>No wallets found</Typo> : null}
           />
         </View>
       </View>
@@ -103,23 +110,13 @@ const styles = StyleSheet.create({
     padding: spacingX._20,
     paddingTop: spacingX._25,
   },
-  lifeStyle: {
-    paddingVertical: spacingY._25,
-    padding: spacingY._15,
-  },
   flexRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: spacingY._10,
   },
-  list: {
-    padding: spacingY._15,
-  },
-  card: {
-    padding: spacingY._15,
-    backgroundColor: colors.neutral800,
-    borderRadius: 12,
-    marginBottom: spacingY._10,
-  },
+  // list: {
+  //   backgroundColor: colors.green,
+  // },
 });

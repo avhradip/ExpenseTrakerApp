@@ -19,8 +19,13 @@ function useFetchData<T = any>(
     useEffect(() => {
         if (!collectionName) return;
 
+        // ❌ Filter out undefined constraints (important!)
+        const safeConstraints = constraints.filter(
+            (c): c is QueryConstraint => c !== undefined
+        );
+
         const collectionRef = collection(firestore, collectionName);
-        const q = query(collectionRef, ...constraints);
+        const q = query(collectionRef, ...safeConstraints);
 
         setLoading(true);
         setError(null);
@@ -51,4 +56,4 @@ function useFetchData<T = any>(
     return { data, loading, error };
 }
 
-export default useFetchData
+export default useFetchData;
