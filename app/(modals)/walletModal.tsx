@@ -113,13 +113,17 @@ const walletModal = () => {
       </View>
       <View style={styles.footer}>
 
-        { oldWallet?.id && !loading && <Button style={styles.deleteButton} onPress={()=>showDeleteAlert()}>
+        {
+          oldWallet?.id && !loading &&
+
+          <Button style={styles.deleteButton} onPress={() => showDeleteAlert()}>
           <Icons.Trash
             weight="bold"
             color={colors.white}
             size={verticalScale(24)}
           />
-        </Button>}
+          </Button>
+        }
 
         <Button onPress={onSubmit} style={{ flex: 1 }} loading={loading}>
           <Typo color={colors.black} fontWeight={"600"}>
